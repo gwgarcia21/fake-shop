@@ -47,6 +47,7 @@ kind: Deployment
 metadata: 
   name: fakeshop
 spec:
+  replicas: 2
   selector:
     matchLabels:
       app: fakeshop
@@ -69,6 +70,8 @@ spec:
               value: ecommerce
             - name: DB_HOST
               value: postgre
+            - name: FLASK_APP
+              value: index.py
           resources:
             limits:
               memory: "512Mi"
@@ -87,3 +90,4 @@ spec:
   type: NodePort
   ports:
     - port: 5000
+      nodePort: 30000
