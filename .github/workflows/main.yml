@@ -21,11 +21,26 @@ jobs:
           context: ./src
           push: true
           file: ./src/Dockerfile
-          tags: gwgarcia21/fake-shop:v${{ github.run_number }}
+          tags: |
+            gwgarcia21/fake-shop:v${{ github.run_number }}
+            gwgarcia21/fake-shop
   CD:
     needs: [CI]
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Obter codigo"
-      - run: echo "Configurar o kubeconfig"
-      - run: echo "Executar o apply"
+      - name: Acquire the code
+        uses: actions/checkout@v4.2.2
+      - name: Kubernetes cluster configuration
+        uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.K8S_KUBECONFIG }}
+          context: <context name>
+      - name: Kubernetes cluster deployment
+        uses: Azure/k8s-deploy@v5
+        with:
+          manifests: |
+              k8s/deployment.yaml
+          images: |
+            'gwgarcia21/fake-shop:v${{ github.run_number }}'
+          
